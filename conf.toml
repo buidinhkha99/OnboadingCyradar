@@ -1,0 +1,17 @@
+[mysql]
+name = "books_shop"
+host = "127.0.0.1"
+post = "30306"
+password = "My:S3cr3t/"
+
+[redis]
+address = "localhost:6379"
+password = ""
+db = 0
+key = "top_books"
+
+[mongodb]
+url = "localhost:27017"
+username = "root"
+password = "root"
+auth_source = "admin"
