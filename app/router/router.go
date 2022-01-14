@@ -1,6 +1,8 @@
 package router
 
 import (
+	"BookShop/app/handlers"
+	"BookShop/app/middlewares"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -13,8 +15,8 @@ func Run() {
 	// post.Path("/book").HandlerFunc(middlewares.SetMiddleware(handlers.CreateBooks))
 	// post.Path("/category").HandlerFunc(middlewares.SetMiddleware(handlers.CreateCategory))
 
-	// get := r.Methods(http.MethodGet).Subrouter()
-	// get.Path("/book").HandlerFunc(middlewares.SetMiddleware(handlers.GetAllProdcut))
+	get := r.Methods(http.MethodGet).Subrouter()
+	get.Path("/book").HandlerFunc(middlewares.SetMiddleware(handlers.GetAllProdcut))
 	// get.Path("/category").HandlerFunc(middlewares.SetMiddleware(handlers.GetCategory))
 	// get.Path("/book/{id}").HandlerFunc(middlewares.SetMiddleware(handlers.GetDetailBook))
 	// get.Path("/book?filter=top").HandlerFunc(middlewares.SetMiddleware(handlers.GetTopBooks))

@@ -1,7 +1,7 @@
 package model
 
 import (
-	"SavingBooks/app/connect"
+	"BookShop/app/connect"
 
 	log "github.com/sirupsen/logrus"
 )

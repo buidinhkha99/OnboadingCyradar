@@ -1,33 +1,46 @@
 package manager
 
 import (
-	"SavingBooks/app/model"
-	"SavingBooks/app/pkg"
+	"BookShop/app/manager/mongodb.go"
+	"BookShop/app/manager/mysqldb"
+	"BookShop/app/model"
+	"BookShop/app/pkg"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
-var database string
+type ConnectionDB interface {
+	Connect() error
+	CreateBook(book model.Book) (err error)
+	UpdateBook(book model.Book)
+	DeleteBook(book model.Book)
+	GetAllBook() ([]model.Book, error)
+	GetBook(ID uint64) (book model.Book)
+	GetTopBook() string
+	GetAllCategory() ([]model.Category, error)
+	CreateCategory(category model.Category)
+	UpdateCategory(category model.Category)
+	DeleteCategory(category model.Category)
+	GetCategory(category model.Category)
+}
+
+var DB ConnectionDB
 
 func init() {
 	err := pkg.LoadConfig()
 	if err != nil {
-		log.Error("Error loading cofig")
-	}
+		log.Error("Error loading cofig ")
 
+	}
 	if viper.GetBool("mysql.status") {
-		database = "mysql"
+		DB = &mysqldb.Mysql{}
 	}
-
 	if viper.GetBool("mongodb.status") {
-		database = "mongodb"
+		DB = &mongodb.Mongo{}
 	}
-}
-
-func ManagerDatabase() interface{} {
-	if database == "mysql" {
-		return model.HandlerMysql
+	err = DB.Connect()
+	if err != nil {
+		panic(err)
 	}
-	return model.HandlerMongodb
 }

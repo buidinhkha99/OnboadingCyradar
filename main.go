@@ -1,19 +1,25 @@
 package main
 
 import (
-	"SavingBooks/app/handlers"
+	"BookShop/app/handlers"
+	"BookShop/app/migrate"
+	"BookShop/app/router"
 	"flag"
 )
 
 func main() {
 	setDataMemory := flag.Bool("setdatamemory", false, "Set data in memory hear !")
-	saveDataMongodb := flag.Bool("setdatamongodb", false, "Set data in mongo hear !")
+	restApi := flag.Bool("restapi", false, "Use API to connect to many databases !")
+	setupDatabaseMysql := flag.Bool("setupmysql", false, "Set table for mysql database !")
 	flag.Parse()
 	if *setDataMemory {
 		handlers.SetDataMemory()
 	}
-	if *saveDataMongodb {
-		handlers.SaveDataMongodb()
+	if *restApi {
+		router.Run()
+	}
+	if *setupDatabaseMysql {
+		migrate.CreateTable()
 	}
 
 }

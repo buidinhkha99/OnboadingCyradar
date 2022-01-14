@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"SavingBooks/app/connect"
-	"SavingBooks/app/model"
+	"BookShop/app/connect"
+	"BookShop/app/model"
 	"bufio"
 	"encoding/json"
 	"errors"

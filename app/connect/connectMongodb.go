@@ -28,20 +28,3 @@ func Close(client *mongo.Client, ctx context.Context, cancel context.CancelFunc)
 		}
 	}()
 }
-
-func CreateMonggodb() {
-
-}
-func UpdateMonggodb() {
-
-}
-func DeleteMongodb() {
-
-}
-func GetDataMongodb() {
-
-}
-
-func GetAllMongodb() {
-
-}

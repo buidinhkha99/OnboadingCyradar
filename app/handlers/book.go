@@ -1,19 +1,23 @@
 package handlers
 
 import (
-	"SavingBooks/app/manager"
+	"BookShop/app/manager"
 	"encoding/json"
 	"fmt"
 	"net/http"
 )
 
-func GetAllProdcut(w http.ResponseWriter, r *http.Request) {
-	handlerMysql := manager.ManagerDatabse()
-	detailBooks := handlerMysql
-	dataBooks, _ := json.Marshal(&detailBooks)
+var db = manager.DB
 
+func GetAllProdcut(w http.ResponseWriter, r *http.Request) {
+	book, err := db.GetAllBook()
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Error: %v", err)
+	}
+	data, _ := json.Marshal(book)
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, string(dataBooks))
+	fmt.Fprint(w, string(data))
 }
 
 // func GetDetailBook(w http.ResponseWriter, r *http.Request) {
