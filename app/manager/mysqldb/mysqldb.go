@@ -11,23 +11,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// var database string
-
-// func init() {
-// 	err := pkg.LoadConfig()
-// 	if err != nil {
-// 		log.Error("Error loading cofig")
-// 	}
-
-// 	if viper.GetBool("mysql.status") {
-// 		database = "mysql"
-// 	}
-
-// 	if viper.GetBool("mongodb.status") {
-// 		database = "mongodb"
-// 	}
-// }
-
 type Mysql struct {
 	conn *gorm.DB // contains the connection to the DB
 }
