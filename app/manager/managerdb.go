@@ -12,17 +12,20 @@ import (
 
 type ConnectionDB interface {
 	Connect() error
-	CreateBook(book model.Book) (err error)
-	UpdateBook(book model.Book)
-	DeleteBook(book model.Book)
+	CreateBook(book *model.Book) error
+	UpdateBook(book model.Book) error
+	DeleteBook(book model.Book) error
 	GetAllBook() ([]model.Book, error)
-	GetBook(ID uint64) (book model.Book)
+	GetBook(ID int64) (book model.Book)
 	GetTopBook() string
 	GetAllCategory() ([]model.Category, error)
-	CreateCategory(category model.Category)
-	UpdateCategory(category model.Category)
-	DeleteCategory(category model.Category)
-	GetCategory(category model.Category)
+	CreateCategory(category model.Category) error
+	UpdateCategory(category model.Category) error
+	DeleteCategory(category model.Category) error
+	GetCategory(ID int64) (category model.Category)
+	UpdateGroupBook(groupBook model.GroupBook) error
+	GetGroupBookByID(id int64) (groupBook []model.GroupBook)
+	CreateGoupBook(groupBook model.GroupBook) error
 }
 
 var DB ConnectionDB

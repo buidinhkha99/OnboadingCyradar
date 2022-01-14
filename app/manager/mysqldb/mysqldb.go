@@ -20,24 +20,31 @@ func (db *Mysql) Connect() error {
 	db.conn = connect.ConnectMysql()
 	return nil
 }
-func (db *Mysql) CreateBook(book model.Book) (err error) {
+func (db *Mysql) CreateBook(book *model.Book) error {
 	result := db.conn.Create(&book)
 	if result.Error != nil {
 		log.Error("Create book have error: %v", result.Error)
+		return result.Error
 	}
 	return nil
 
 }
 
-func (db *Mysql) UpdateBook(book model.Book) {
-	db.conn.Save(&book)
+func (db *Mysql) UpdateBook(book model.Book) error {
+	result := db.conn.Save(&book)
+	if result.Error != nil {
+		log.Error("Update book have error: %v", result.Error)
+	}
+	return nil
 }
 
-func (db *Mysql) DeleteBook(book model.Book) {
+func (db *Mysql) DeleteBook(book model.Book) error {
 	result := db.conn.Delete(&book)
 	if result.Error != nil {
 		log.Error("Delete book have error: %v", result.Error)
+		return result.Error
 	}
+	return nil
 
 }
 
@@ -50,7 +57,7 @@ func (db *Mysql) GetAllBook() ([]model.Book, error) {
 	return books, nil
 }
 
-func (db *Mysql) GetBook(ID uint64) (book model.Book) {
+func (db *Mysql) GetBook(ID int64) (book model.Book) {
 	db.conn.Where("id = ?", ID).Find(&book)
 	return book
 }
@@ -71,25 +78,38 @@ func (db *Mysql) GetTopBook() string {
 	}
 	return data
 }
+func (db *Mysql) GetGroupBookByID(id int64) (groupBook []model.GroupBook) {
+	db.conn.Where("book_id = ?", id).Find(&groupBook)
+	return groupBook
+}
 
 // handler Catergory
 
-func (db *Mysql) CreateCategory(category model.Category) {
+func (db *Mysql) CreateCategory(category model.Category) error {
 	result := db.conn.Create(&category)
 	if result.Error != nil {
 		log.Error("Create category have error: %v", result.Error)
+		return result.Error
 	}
+	return nil
 }
 
-func (db *Mysql) UpdateCategory(category model.Category) {
-	db.conn.Save(&category)
+func (db *Mysql) UpdateCategory(category model.Category) error {
+	result := db.conn.Save(&category)
+	if result.Error != nil {
+		log.Error("Create book have error: %v", result.Error)
+		return result.Error
+	}
+	return nil
 }
 
-func (db *Mysql) DeleteCategory(category model.Category) {
+func (db *Mysql) DeleteCategory(category model.Category) error {
 	result := db.conn.Delete(&category)
 	if result.Error != nil {
 		log.Error("Delete category have error: %v", result.Error)
+		return result.Error
 	}
+	return nil
 }
 
 func (db *Mysql) GetAllCategory() ([]model.Category, error) {
@@ -100,6 +120,24 @@ func (db *Mysql) GetAllCategory() ([]model.Category, error) {
 	}
 	return category, nil
 }
-func (db *Mysql) GetCategory(category model.Category) {
-	db.conn.Where("id = ?", category.ID).Find(&category)
+
+func (db *Mysql) GetCategory(ID int64) (category model.Category) {
+	db.conn.Where("id = ?", ID).Find(&category)
+	return category
+}
+
+func (db *Mysql) UpdateGroupBook(groupBook model.GroupBook) error {
+	result := db.conn.Save(&groupBook)
+	if result.Error != nil {
+		log.Error("Create book have error: %v", result.Error)
+	}
+	return nil
+}
+
+func (db *Mysql) CreateGoupBook(groupBook model.GroupBook) error {
+	result := db.conn.Create(&groupBook)
+	if result.Error != nil {
+		log.Error("Create book have error: %v", result.Error)
+	}
+	return nil
 }

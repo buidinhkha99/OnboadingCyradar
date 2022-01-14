@@ -1,7 +1,7 @@
 package model
 
 type Book struct {
-	ID          uint64  `json:"id,omitempty" `
+	ID          uint64  `gorm:"primaryKey";json:"id,omitempty" `
 	Name        string  `json:"name,omitempty" `
 	Quantily    int     `json:"quantily,omitempty" `
 	Description string  `json:"description,omitempty" `

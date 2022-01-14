@@ -29,7 +29,7 @@ func (mg *Mongo) Connect() error {
 	mg.ctx = ctx
 	return nil
 }
-func (mg *Mongo) CreateBook(book model.Book) (err error) {
+func (mg *Mongo) CreateBook(book *model.Book) error {
 	// result := mg.client.Create(&book)
 	// if result.Error != nil {
 	// 	log.Error("Create book have error: %v", result.Error)
@@ -39,17 +39,19 @@ func (mg *Mongo) CreateBook(book model.Book) (err error) {
 
 }
 
-func (mg *Mongo) UpdateBook(book model.Book) {
+func (mg *Mongo) UpdateBook(book model.Book) error {
 	// mg.client.Save(&book)
 	// defer connect.Close(mg.client, mg.ctx, mg.cancel)
+	return nil
 }
 
-func (mg *Mongo) DeleteBook(book model.Book) {
+func (mg *Mongo) DeleteBook(book model.Book) error {
 	// result := mg.client.Delete(&book)
 	// if result.Error != nil {
 	// 	log.Error("Delete book have error: %v", result.Error)
 	// }
 	// defer connect.Close(mg.client, mg.ctx, mg.cancel)
+	return nil
 
 }
 
@@ -64,7 +66,7 @@ func (mg *Mongo) GetAllBook() ([]model.Book, error) {
 	return books, nil
 }
 
-func (mg *Mongo) GetBook(ID uint64) (book model.Book) {
+func (mg *Mongo) GetBook(ID int64) (book model.Book) {
 	// mg.client.Where("id = ?", ID).Find(&book)
 	return book
 }
@@ -86,24 +88,32 @@ func (mg *Mongo) GetTopBook() string {
 	return data
 }
 
+func (db *Mongo) GetGroupBookByID(id int64) (groupBook []model.GroupBook) {
+	// db.conn.Where("book_id = ?", id).Find(&groupBook)
+	return groupBook
+}
+
 // handler Catergory
 
-func (mg *Mongo) CreateCategory(category model.Category) {
+func (mg *Mongo) CreateCategory(category model.Category) error {
 	// result := mg.client.Create(&category)
 	// if result.Error != nil {
 	// 	log.Error("Create category have error: %v", result.Error)
 	// }
+	return nil
 }
 
-func (mg *Mongo) UpdateCategory(category model.Category) {
+func (mg *Mongo) UpdateCategory(category model.Category) error {
 	// mg.client.Save(&category)
+	return nil
 }
 
-func (mg *Mongo) DeleteCategory(category model.Category) {
+func (mg *Mongo) DeleteCategory(category model.Category) error {
 	// result := mg.client.Delete(&category)
 	// if result.Error != nil {
 	// 	log.Error("Delete category have error: %v", result.Error)
 	// }
+	return nil
 }
 
 func (mg *Mongo) GetAllCategory() ([]model.Category, error) {
@@ -114,6 +124,20 @@ func (mg *Mongo) GetAllCategory() ([]model.Category, error) {
 	// }
 	return category, nil
 }
-func (mg *Mongo) GetCategory(category model.Category) {
-	// mg.client.Where("id = ?", category.ID).Find(&category)
+func (db *Mongo) GetCategory(ID int64) (category model.Category) {
+	// db.conn.Where("id = ?", ID).Find(&category)
+	return category
+}
+
+func (db *Mongo) UpdateGroupBook(groupBook model.GroupBook) error {
+	// db.conn.Save(&groupBook)
+	return nil
+}
+
+func (db *Mongo) CreateGoupBook(groupBook model.GroupBook) error {
+	// result := db.conn.Create(&groupBook)
+	// if result.Error != nil {
+	// 	log.Error("Create book have error: %v", result.Error)
+	// }
+	return nil
 }

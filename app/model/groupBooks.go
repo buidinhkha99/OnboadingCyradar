@@ -7,6 +7,7 @@ import (
 )
 
 type GroupBook struct {
+	ID         uint64 `gorm:"primaryKey";json:"id, omitempty"`
 	CategoryID uint64 `json:"category_id,omitempty"`
 	BookID     uint64 `json:"book_id,omitempty"`
 }
