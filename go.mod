@@ -10,5 +10,6 @@ require (
 	github.com/spf13/viper v1.10.1
 	go.mongodb.org/mongo-driver v1.8.2
 	gorm.io/driver/mysql v1.2.3
+	gorm.io/driver/postgres v1.2.3
 	gorm.io/gorm v1.22.5
 )
