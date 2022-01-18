@@ -1,6 +1,11 @@
 package pkg
 
-import "github.com/spf13/viper"
+import (
+	"fmt"
+
+	"github.com/google/uuid"
+	"github.com/spf13/viper"
+)
 
 func LoadConfig() error {
 	viper.AddConfigPath(".")
@@ -13,4 +18,10 @@ func LoadConfig() error {
 		return err
 	}
 	return nil
+}
+
+func GenID() string {
+	id := uuid.New()
+	fmt.Println(id)
+	return id.String()
 }

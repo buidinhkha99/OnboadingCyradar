@@ -3,6 +3,7 @@ package mysqldb
 import (
 	"BookShop/app/connect"
 	"BookShop/app/model"
+	"BookShop/app/pkg"
 	"BookShop/app/pkg/cache"
 	"encoding/json"
 
@@ -17,10 +18,17 @@ type Mysql struct {
 
 func (db *Mysql) Connect() error {
 
-	db.conn = connect.ConnectMysql()
+	mysql, err := connect.ConnectMysql()
+	if err != nil {
+		return err
+	}
+	db.conn = mysql
 	return nil
 }
+
 func (db *Mysql) CreateBook(book *model.Book) error {
+	id := pkg.GenID()
+	book.ID = id
 	result := db.conn.Create(&book)
 	if result.Error != nil {
 		log.Error("Create book have error: %v", result.Error)
@@ -57,18 +65,17 @@ func (db *Mysql) GetAllBook() ([]model.Book, error) {
 	return books, nil
 }
 
-func (db *Mysql) GetBook(ID int64) (book model.Book) {
+func (db *Mysql) GetBook(ID string) (book model.Book, err error) {
 	db.conn.Where("id = ?", ID).Find(&book)
-	return book
+	return book, nil
 }
 
 func (db *Mysql) GetTopBook() string {
 	key := viper.GetString("redis.key")
 	data := cache.ServeJQueryWithRemoteCache(key)
 	if data == "" {
-		db := connect.ConnectMysql()
 		var books []model.Book
-		db.Limit(9).Order("rate desc").Find(&books)
+		db.conn.Limit(9).Order("rate desc").Find(&books)
 		b, _ := json.Marshal(books)
 		err := cache.InsertData(key, string(b))
 		if err != nil {
@@ -78,14 +85,16 @@ func (db *Mysql) GetTopBook() string {
 	}
 	return data
 }
-func (db *Mysql) GetGroupBookByID(id int64) (groupBook []model.GroupBook) {
+func (db *Mysql) GetGroupBookByID(id string) (groupBook []model.GroupBook, err error) {
 	db.conn.Where("book_id = ?", id).Find(&groupBook)
-	return groupBook
+	return groupBook, nil
 }
 
 // handler Catergory
 
 func (db *Mysql) CreateCategory(category model.Category) error {
+	id := pkg.GenID()
+	category.ID = id
 	result := db.conn.Create(&category)
 	if result.Error != nil {
 		log.Error("Create category have error: %v", result.Error)
@@ -121,7 +130,7 @@ func (db *Mysql) GetAllCategory() ([]model.Category, error) {
 	return category, nil
 }
 
-func (db *Mysql) GetCategory(ID int64) (category model.Category) {
+func (db *Mysql) GetCategory(ID string) (category model.Category) {
 	db.conn.Where("id = ?", ID).Find(&category)
 	return category
 }
@@ -135,6 +144,8 @@ func (db *Mysql) UpdateGroupBook(groupBook model.GroupBook) error {
 }
 
 func (db *Mysql) CreateGoupBook(groupBook model.GroupBook) error {
+	id := pkg.GenID()
+	groupBook.ID = id
 	result := db.conn.Create(&groupBook)
 	if result.Error != nil {
 		log.Error("Create book have error: %v", result.Error)

@@ -6,13 +6,15 @@ import (
 	"gorm.io/gorm"
 )
 
-
-func ConnectMysql() *gorm.DB {
+func ConnectMysql() (*gorm.DB, error) {
 	nameDB := viper.GetString("mysql.name")
 	host := viper.GetString("mysql.host")
-	post := viper.GetString("mysql.post")
+	port := viper.GetString("mysql.post")
 	password := viper.GetString("mysql.password")
-	dsn := "root:" + password + "@tcp(" + host + ":" + post + ")/" + nameDB + "?charset=utf8mb4&parseTime=True&loc=Local"
-	db, _ := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	return db
+	dsn := "root:" + password + "@tcp(" + host + ":" + port + ")/" + nameDB + "?charset=utf8mb4&parseTime=True&loc=Local"
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		return nil, err
+	}
+	return db, nil
 }

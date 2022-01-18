@@ -1,33 +1,7 @@
 package model
 
-import (
-	"BookShop/app/connect"
-
-	log "github.com/sirupsen/logrus"
-)
-
 type GroupBook struct {
-	ID         uint64 `gorm:"primaryKey";json:"id, omitempty"`
-	CategoryID uint64 `json:"category_id,omitempty"`
-	BookID     uint64 `json:"book_id,omitempty"`
-}
-
-func (groupBook GroupBook) CreateMysql() {
-	db := connect.ConnectMysql()
-	result := db.Create(&groupBook)
-	if result.Error != nil {
-		log.Error("Create groupBook have error: %v", result.Error)
-	}
-}
-
-func (groupBook GroupBook) UpdateMysql() {
-
-}
-
-func (groupBook GroupBook) DeleteMysql() {
-	db := connect.ConnectMysql()
-	result := db.Delete(&groupBook)
-	if result.Error != nil {
-		log.Error("Delete groupBook have error: %v", result.Error)
-	}
+	ID         string `gorm:"primaryKey";json:"id" bson:"_id,omitempty"`
+	CategoryID string `json:"category_id,omitempty" bson:"categoryid,omitempty"`
+	BookID     string `json:"book_id,omitempty" bson:"bookid,omitempty"`
 }

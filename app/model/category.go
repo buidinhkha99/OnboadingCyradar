@@ -1,6 +1,6 @@
 package model
 
 type Category struct {
-	ID   uint64 `gorm:"primaryKey";json:"id, omitempty"`
-	Name string `json:"name, omitempty"`
+	ID   string `json:"id, omitempty" bson:"_id,omitempty"`
+	Name string `json:"name, omitempty" bson:"name,omitempty"`
 }

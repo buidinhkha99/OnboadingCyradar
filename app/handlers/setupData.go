@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 )
 
 var memory = make(map[string][]interface{})
@@ -114,9 +115,12 @@ func SaveDataMongodb() error {
 		log.Errorf("Cannot connect to mongoDB: %v", err)
 		return err
 	}
-	bookDatabase := client.Database("BookShop")
-	bookCollection := bookDatabase.Collection("book")
-	catergoryCollection := bookDatabase.Collection("category")
+	database := viper.GetString("mongodb.Database")
+	connectionBook := viper.GetString("mongodb.ConnectionBook")
+	connectionCategory := viper.GetString("mongodb.ConnectionCategory")
+	bookDatabase := client.Database(database)
+	bookCollection := bookDatabase.Collection(connectionBook)
+	catergoryCollection := bookDatabase.Collection(connectionCategory)
 
 	if len(memory) == 0 {
 		return errors.New("no data in memory")

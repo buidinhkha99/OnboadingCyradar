@@ -6,19 +6,34 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 )
 
 var db = manager.DB
 
+func ManagerFilter(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	filter := vars["filter"]
+	if filter == "top" {
+		GetTopBooks(w, r)
+		return
+	}
+	if len(filter) == 0 {
+		GetAllProdcut(w, r)
+		return
+	}
+	w.WriteHeader(http.StatusBadRequest)
+	fmt.Fprintf(w, "No required !")
+}
 func GetAllProdcut(w http.ResponseWriter, r *http.Request) {
 	book, err := db.GetAllBook()
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(w, "Error: %v", err)
+		return
 	}
+
 	data, _ := json.Marshal(book)
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprint(w, string(data))
@@ -26,14 +41,27 @@ func GetAllProdcut(w http.ResponseWriter, r *http.Request) {
 
 func GetDetailBook(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	idBook, _ := strconv.ParseInt(vars["id"], 10, 64)
+	idBook := vars["id"]
 	bookDetail := model.DetailBook{}
 
-	bookDetail.Book = db.GetBook(idBook)
-	bookDetail.GroupBooks = db.GetGroupBookByID(idBook)
-	for _, group := range bookDetail.GroupBooks {
-		bookDetail.Category = append(bookDetail.Category, db.GetCategory(int64(group.CategoryID)))
+	b, err := db.GetBook(idBook)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, err)
+		return
 	}
+	bookDetail.Book = b
+	if len(bookDetail.Book.ID) == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprint(w, "No data")
+		return
+	}
+
+	bookDetail.GroupBooks, _ = db.GetGroupBookByID(idBook)
+	for _, group := range bookDetail.GroupBooks {
+		bookDetail.Category = append(bookDetail.Category, db.GetCategory(group.CategoryID))
+	}
+
 	dataBook, _ := json.Marshal(&bookDetail)
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprint(w, string(dataBook))
@@ -41,22 +69,9 @@ func GetDetailBook(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetTopBooks(w http.ResponseWriter, r *http.Request) {
-	// key := viper.GetString("redis.key")
-	// if data := cache.ServeJQueryWithRemoteCache(w, key); data == "" {
-	// 	db := connect.ConnectMysql()
-	// 	var books []model.Books
-	// 	db.Limit(9).Order("rate desc").Find(&books)
-	// 	b, _ := json.Marshal(books)
-	// 	err := cache.InsertData(key, string(b))
-	// 	if err != nil {
-	// 		log.Error("Error when add data in remote cache")
-	// 	}
-	// 	fmt.Fprintln(w, string(b))
 
-	// } else {
-	// 	fmt.Fprintln(w, data)
-	// }
-
+	data := db.GetTopBook()
+	fmt.Fprintf(w, data)
 }
 
 func CreateBooks(w http.ResponseWriter, r *http.Request) {
@@ -66,45 +81,43 @@ func CreateBooks(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, err)
 		return
 	}
+
 	err = db.CreateBook(&book.Book)
 	if err != nil {
 		fmt.Fprint(w, err)
+		return
 	}
+
 	for _, category := range book.Category {
 		var group model.GroupBook
 		group.BookID = book.Book.ID
 		group.CategoryID = category.ID
 		err = db.CreateGoupBook(group)
 	}
+
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(w, "Wrong data !")
+		return
 	}
 	fmt.Fprint(w, "Create book successfull")
 
 }
 func DeteleBook(w http.ResponseWriter, r *http.Request) {
-	// db := connect.ConnectMysql()
-	// var book model.Books
-	// var image model.Images
-	// vars := mux.Vars(r)
-	// idBook, err := strconv.ParseInt(vars["id"], 10, 64)
-	// if err != nil {
-	// 	w.WriteHeader(http.StatusBadRequest)
-	// 	fmt.Fprintf(w, "Error: %v", err)
-	// }
-	// db.Delete(&book, idBook)
-	// db.Where("book_id =?", idBook).Delete(&image)
-	// bookElt := model.BookELT{
-	// 	ID: int(idBook),
-	// }
-	// // delete in Elasticsearch
-	// err = bookElt.DeleteDoc()
-	// if err != nil {
-	// 	log.Error("Error add data in Elasticsearch, ID: ", idBook)
-	// }
-	// w.WriteHeader(http.StatusOK)
-	// fmt.Fprint(w, "Delete successfull !")
+	var book model.Book
+	err := json.NewDecoder(r.Body).Decode(&book)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, err)
+		return
+	}
+	err = db.DeleteBook(book)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, err)
+		return
+	}
+	fmt.Fprint(w, "Delete successfull !")
 }
 
 func UpdateBook(w http.ResponseWriter, r *http.Request) {
@@ -114,11 +127,24 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(w, "Error: %v", err)
+		return
 	}
-	db.UpdateBook(detailBook.Book)
+
+	err = db.UpdateBook(detailBook.Book)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, err)
+		return
+	}
 	for _, groupBook := range detailBook.GroupBooks {
-		db.UpdateGroupBook(groupBook)
+		err = db.UpdateGroupBook(groupBook)
 	}
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, err)
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprint(w, "Update successfull !")
 }

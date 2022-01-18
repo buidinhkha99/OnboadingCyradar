@@ -1,8 +1,9 @@
 package manager
 
 import (
-	"BookShop/app/manager/mongodb.go"
+	"BookShop/app/manager/mongodb"
 	"BookShop/app/manager/mysqldb"
+	"BookShop/app/manager/postgesdb"
 	"BookShop/app/model"
 	"BookShop/app/pkg"
 
@@ -16,15 +17,15 @@ type ConnectionDB interface {
 	UpdateBook(book model.Book) error
 	DeleteBook(book model.Book) error
 	GetAllBook() ([]model.Book, error)
-	GetBook(ID int64) (book model.Book)
+	GetBook(ID string) (book model.Book, err error)
 	GetTopBook() string
 	GetAllCategory() ([]model.Category, error)
 	CreateCategory(category model.Category) error
 	UpdateCategory(category model.Category) error
 	DeleteCategory(category model.Category) error
-	GetCategory(ID int64) (category model.Category)
+	GetCategory(ID string) (category model.Category)
 	UpdateGroupBook(groupBook model.GroupBook) error
-	GetGroupBookByID(id int64) (groupBook []model.GroupBook)
+	GetGroupBookByID(id string) (groupBook []model.GroupBook, err error)
 	CreateGoupBook(groupBook model.GroupBook) error
 }
 
@@ -34,6 +35,7 @@ func init() {
 	err := pkg.LoadConfig()
 	if err != nil {
 		log.Error("Error loading cofig ")
+		return
 
 	}
 	if viper.GetBool("mysql.status") {
@@ -41,6 +43,9 @@ func init() {
 	}
 	if viper.GetBool("mongodb.status") {
 		DB = &mongodb.Mongo{}
+	}
+	if viper.GetBool("postgres.status") {
+		DB = &postgesdb.Postgres{}
 	}
 	err = DB.Connect()
 	if err != nil {
