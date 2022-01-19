@@ -15,3 +15,5 @@ type DetailBook struct {
 	Category   []Category  `json:"category" bson:"category,omitempty"`
 	GroupBooks []GroupBook `json:"group" bson:"group,omitempty"`
 }
+
+

@@ -2,15 +2,22 @@ package handlers
 
 import (
 	"BookShop/app_book/manager"
+	pubsub "BookShop/app_book/manager/pub_sub"
 	"BookShop/app_book/model"
 	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/spf13/viper"
 )
 
 var db = manager.DB
+
+type BookPublish struct {
+	ID          string `json:"id"`
+	Description string `json:"description"`
+}
 
 func ManagerFilter(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -56,6 +63,21 @@ func GetDetailBook(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "No data")
 		return
 	}
+
+	// publish message to redis
+	data := BookPublish{
+		ID:          idBook,
+		Description: "GetGroup&Category",
+	}
+	channel := viper.GetString("redis.channel_book")
+	err = pubsub.Publish(data, channel)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Can't publisher data, err: %v", err)
+		return
+	}
+
+	// subscribe result from redis
 
 	bookDetail.GroupBooks, _ = db.GetGroupBookByID(idBook)
 	for _, group := range bookDetail.GroupBooks {

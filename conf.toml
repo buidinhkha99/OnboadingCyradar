@@ -10,7 +10,8 @@ address = "localhost:6379"
 password = ""
 db = 0
 key = "top_books"
-channel_name = "book"
+channel_book = "book"
+channel_category = "category"
 
 [mongodb]
 status = false

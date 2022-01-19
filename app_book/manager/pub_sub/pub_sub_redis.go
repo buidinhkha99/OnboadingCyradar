@@ -21,25 +21,30 @@ func init() {
 	SubscriberClient = subscriber
 }
 
-func Publish(data interface{}) error {
+func Publish(data interface{}, channel string) error {
 	var ctx = context.Background()
-	channel := viper.GetString("redis.channel_name")
 	rdb := connect.ConnectRedis()
-	err := rdb.Publish(ctx, channel, data).Err()
+	dataJson, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+	err = rdb.Publish(ctx, channel, dataJson).Err()
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func Subscribe(data interface{}) {
-
+func Subscribe(data interface{}) error {
 	msg, err := SubscriberClient.ReceiveMessage(ctx)
 	if err != nil {
 		log.Error("Can't receive message for redis")
+		return err
 	}
 
 	if err := json.Unmarshal([]byte(msg.Payload), &data); err != nil {
 		log.Error("Can't unmarshal message")
+		return err
 	}
+	return nil
 }
