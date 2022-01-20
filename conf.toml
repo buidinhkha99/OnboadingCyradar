@@ -1,5 +1,5 @@
 [mysql]
-status = false
+status = true
 name = "books_shop"
 host = "127.0.0.1"
 post = "30306"
@@ -25,7 +25,7 @@ connection_category ="category"
 connection_group_book ="groupbook"
 
 [postgres]
-status = true
+status = false
 host ="127.0.0.1"
 name = "postgres"
 post = "5432"

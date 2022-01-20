@@ -1,10 +1,10 @@
 package main
 
 import (
-	"BookShop/app_book/handlers"
-	"BookShop/app_book/migrate"
-	routerBook "BookShop/app_book/router"
-	routerCategory "BookShop/app_category/router"
+	routerBook "BookShop/cmd/microservice/book/app/router"
+	routerCategory "BookShop/cmd/microservice/category/app/router"
+	"BookShop/migrate"
+	"BookShop/program"
 	"flag"
 
 	log "github.com/sirupsen/logrus"
@@ -17,11 +17,11 @@ func main() {
 	// restApi := flag.Bool("restapi", false, "Use API to connect to many databases !")
 	setupDatabaseMysql := flag.Bool("setupmysql", false, "Set table for mysql database !")
 	setupDatabasePostGres := flag.Bool("setuppostgres", false, "Set table for postgres database !")
-	restApiBook := flag.Bool("apibook", false, "Rest API for book")
+	restApiBook := flag.Bool("apibook", true, "Rest API for book")
 	restApiCategory := flag.Bool("apicategory", false, "Rest API for category")
 	flag.Parse()
 	if *setDataMemory {
-		handlers.SetDataMemory()
+		program.SetDataMemory()
 	}
 	// if *restApi {
 	// 	router.Run()
