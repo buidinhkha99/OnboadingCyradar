@@ -31,3 +31,6 @@ name = "postgres"
 post = "5432"
 user = "postgres"
 password = "root"
+
+[http_pubsub]
+status = "true"

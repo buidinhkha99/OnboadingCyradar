@@ -152,3 +152,16 @@ func (db *Mysql) CreateGoupBook(groupBook model.GroupBook) error {
 	}
 	return nil
 }
+
+func (db *Mysql) GetBookWithCatergory(ID string) ([]model.Book, error) {
+	var groupBook []model.GroupBook
+	db.conn.Where("category_id = ?", ID).Find(&groupBook)
+	var books []model.Book
+	for _, group := range groupBook {
+		var book model.Book
+		db.conn.Where("id = ?", group.BookID).Find(&book)
+		books = append(books, book)
+	}
+
+	return books, nil
+}

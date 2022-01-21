@@ -15,12 +15,20 @@ type DetailBook struct {
 	Category   []Category  `json:"category"`
 	GroupBooks []GroupBook `json:"group" `
 	Status     bool        `json:"status"`
+	Books      []Book      `json:"books"`
 }
 
 type BookPublish struct {
-	IdBook      string     `json:"id"`
-	Description string     `json:"description"`
-	Channel     string     `json:"channel"`
-	Category    []Category `json:"category"`
-	GroupBook   GroupBook  `json:"groupbook"`
+	IdBook      string    `json:"id"`
+	Description string    `json:"description"`
+	Channel     string    `json:"channel"`
+	GroupBook   GroupBook `json:"groupbook"`
+}
+
+type CatPublish struct {
+	IdCatergory string    `json:"id"`
+	Description string    `json:"description"`
+	Channel     string    `json:"channel"`
+	Book        []Book    `json:"book"`
+	GroupBook   GroupBook `json:"groupbook"`
 }

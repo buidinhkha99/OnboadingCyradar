@@ -3,7 +3,6 @@ package router
 import (
 	"BookShop/cmd/microservice/category/app/handlers"
 	"BookShop/cmd/microservice/category/app/middlewares"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -11,14 +10,17 @@ import (
 )
 
 func Run() {
-	go handlers.CheckPubSub()
-	fmt.Println(1)
 	r := mux.NewRouter().StrictSlash(true)
 	post := r.Methods(http.MethodPost).Subrouter()
 	post.Path("/category").HandlerFunc(middlewares.SetMiddleware(handlers.CreateCategory))
+	post.Path("/goupbook").HandlerFunc(middlewares.SetMiddleware(handlers.CreateGoupBook))
+	post.Path("/groupbookup").HandlerFunc(middlewares.SetMiddleware(handlers.UpGroupBook))
 
 	get := r.Methods(http.MethodGet).Subrouter()
 	get.Path("/category").HandlerFunc(middlewares.SetMiddleware(handlers.GetCategory))
+	get.Path("/category/{id}").HandlerFunc(middlewares.SetMiddleware(handlers.ManagerFilter))
+	get.Path("/category/{id}").Queries("filter", "{filter}").HandlerFunc(middlewares.SetMiddleware(handlers.ManagerFilter))
+
 	// get.Path("/book").Queries("filter", "{filter}").HandlerFunc(middlewares.SetMiddleware(handlers.GetTopBooks))
 	delete := r.Methods(http.MethodDelete).Subrouter()
 	delete.Path("/category").HandlerFunc(middlewares.SetMiddleware(handlers.DeteleCategory))

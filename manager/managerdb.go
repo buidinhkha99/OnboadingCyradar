@@ -27,6 +27,7 @@ type ConnectionDB interface {
 	UpdateGroupBook(groupBook model.GroupBook) error
 	GetGroupBookByID(id string) (groupBook []model.GroupBook, err error)
 	CreateGoupBook(groupBook model.GroupBook) error
+	GetBookWithCatergory(ID string) ([]model.Book, error)
 }
 
 var DB ConnectionDB

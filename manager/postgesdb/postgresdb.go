@@ -151,3 +151,16 @@ func (db *Postgres) CreateGoupBook(groupBook model.GroupBook) error {
 	}
 	return nil
 }
+
+func (db *Postgres) GetBookWithCatergory(ID string) ([]model.Book, error) {
+	var groupBook []model.GroupBook
+	db.pg.Where("category_id = ?", ID).Find(&groupBook)
+	var books []model.Book
+	for _, group := range groupBook {
+		var book model.Book
+		db.pg.Where("id = ?", group.BookID).Find(&book)
+		books = append(books, book)
+	}
+
+	return books, nil
+}

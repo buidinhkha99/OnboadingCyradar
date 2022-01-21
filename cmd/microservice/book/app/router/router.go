@@ -16,7 +16,7 @@ func Run() {
 
 	get := r.Methods(http.MethodGet).Subrouter()
 	get.Path("/book").Queries("filter", "{filter}").HandlerFunc(middlewares.SetMiddleware(handlers.ManagerFilter))
-	// get.Path("/book").Queries("filter", "{filter}").HandlerFunc(middlewares.SetMiddleware(handlers.GetTopBooks))
+	get.Path("/book/{id}").Queries("filter", "{filter}").HandlerFunc(middlewares.SetMiddleware(handlers.ManagerFilter))
 	get.Path("/book/{id}").HandlerFunc(middlewares.SetMiddleware(handlers.GetDetailBook))
 	delete := r.Methods(http.MethodDelete).Subrouter()
 	delete.Path("/book").HandlerFunc(middlewares.SetMiddleware(handlers.DeteleBook))

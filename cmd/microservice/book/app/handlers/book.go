@@ -13,10 +13,13 @@ import (
 var db = manager.DB
 
 func ManagerFilter(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	filter := vars["filter"]
+	filter := r.URL.Query().Get("filter")
 	if filter == "top" {
 		GetTopBooks(w, r)
+		return
+	}
+	if filter == "getbookcat" {
+		GetBookByCatergory(w, r)
 		return
 	}
 	if len(filter) == 0 {
@@ -27,6 +30,7 @@ func ManagerFilter(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "No required !")
 }
 func GetAllProdcut(w http.ResponseWriter, r *http.Request) {
+	fmt.Print(1)
 	book, err := db.GetAllBook()
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -56,16 +60,13 @@ func GetDetailBook(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "No data")
 		return
 	}
-	bookPub := model.BookPublish{
-		IdBook:      bookDetail.Book.ID,
-		Description: "GetGroupCategory",
-	}
-	data, err := ListenPubSub(bookPub)
+
+	// pub/sub data
+	data, err := GetDetailBookPubSub(bookDetail, w, r)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, err)
 		return
 	}
+
 	bookDetail.GroupBooks = data.GroupBooks
 	bookDetail.Category = data.Category
 	dataBook, _ := json.Marshal(&bookDetail)
@@ -95,27 +96,10 @@ func CreateBooks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	for _, category := range book.Category {
-		var group model.GroupBook
-		group.BookID = book.Book.ID
-		group.CategoryID = category.ID
-
-		data := model.BookPublish{
-			GroupBook:   group,
-			Description: "CreateGroupBook",
-		}
-		bookSub, err := ListenPubSub(data)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			fmt.Fprint(w, err)
-			return
-		}
-		if !bookSub.Status {
-			w.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintf(w, "Wrong data !")
-			return
-		}
+		CreateBookPubSub(book, category, w, r)
 	}
-	fmt.Fprint(w, "Create book successfull")
+	dataBook, _ := json.Marshal(&book.Book)
+	fmt.Fprintf(w, string(dataBook))
 
 }
 func DeteleBook(w http.ResponseWriter, r *http.Request) {
@@ -152,23 +136,32 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	for _, groupBook := range detailBook.GroupBooks {
-		dataPub := model.BookPublish{
-			GroupBook:   groupBook,
-			Description: "UpdateGroupBook",
-		}
-		dataSub, err := ListenPubSub(dataPub)
+		err = UpdateBookPubSub(groupBook)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprint(w, err)
-			return
-		}
-		if !dataSub.Status {
-			w.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintf(w, "Wrong data !")
 			return
 		}
 	}
 
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprint(w, "Update successfull !")
+}
+
+func GetBookByCatergory(w http.ResponseWriter, r *http.Request) {
+	bookDetail := model.DetailBook{
+		Status: true,
+	}
+	vars := mux.Vars(r)
+	idCategory := vars["id"]
+	book, err := db.GetBookWithCatergory(idCategory)
+	if err != nil {
+		bookDetail.Status = false
+		dataBook, _ := json.Marshal(&bookDetail)
+		fmt.Fprint(w, string(dataBook))
+		return
+	}
+	bookDetail.Books = book
+	dataBook, _ := json.Marshal(&bookDetail)
+	fmt.Fprint(w, string(dataBook))
 }

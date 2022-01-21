@@ -56,3 +56,38 @@ func ListenPubSub(bookPub model.BookPublish) (data model.DetailBook, err error) 
 		return data, nil
 	}
 }
+
+func CheckPubSub() {
+	ch := make(chan model.CatPublish, 5)
+	go CheckMessBook(ch)
+	for data := range ch {
+		var bookDetail model.DetailBook
+		switch data.Description {
+		case "GetBooks":
+
+			// get data in database
+			book, _ := db.GetBookWithCatergory(data.IdCatergory)
+			// subscribe data
+			bookDetail.Books = book
+			err := pubsub.Publish(bookDetail, data.Channel)
+			if err != nil {
+				log.Error("Can't publisher data, err: %v", err)
+				continue
+			}
+		}
+
+	}
+}
+
+func CheckMessBook(ch chan model.CatPublish) {
+	var catSub model.CatPublish
+	channel := viper.GetString("redis.channel_category")
+	for {
+		err := pubsub.Subscribe(&catSub, channel)
+		if err != nil {
+			log.Errorf("Can't not get data from book %v", err.Error())
+		}
+		ch <- catSub
+	}
+
+}

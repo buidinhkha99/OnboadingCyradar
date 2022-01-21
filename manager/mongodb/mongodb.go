@@ -277,6 +277,28 @@ func (mg *Mongo) CreateGoupBook(groupBook model.GroupBook) error {
 	return nil
 }
 
+func (mg *Mongo) GetBookWithCatergory(ID string) ([]model.Book, error) {
+	mg.Connect()
+	var groupBook []model.GroupBook
+	var books []model.Book
+	cursor, err := mg.GroupBook.Find(context.TODO(), bson.D{{"category_id", ID}})
+	if err != nil {
+		log.Errorf("Error when get group book %v, Error: %v", cursor, err)
+		return books, err
+	}
+	if err = cursor.All(context.TODO(), &groupBook); err != nil {
+		log.Errorf("Error when get group book %v, Error: %v", cursor, err)
+		return books, err
+	}
+
+	for _, group := range groupBook {
+		book, _ := mg.GetBook(group.BookID)
+		books = append(books, book)
+	}
+
+	return books, nil
+}
+
 // convert data to bson
 func ConvertBson(v interface{}) (bson.M, error) {
 	pByte, err := bson.Marshal(v)
