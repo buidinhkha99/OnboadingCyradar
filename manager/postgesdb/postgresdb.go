@@ -74,7 +74,7 @@ func (db *Postgres) GetTopBook() string {
 	data := cache.ServeJQueryWithRemoteCache(key)
 	if data == "" {
 		var books []model.Book
-		db.pg.Limit(9).Order("rate desc").Find(&books)
+		db.pg.Limit(8).Order("rate desc").Find(&books)
 		b, _ := json.Marshal(books)
 		err := cache.InsertData(key, string(b))
 		if err != nil {

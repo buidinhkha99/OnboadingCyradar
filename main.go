@@ -19,7 +19,7 @@ func main() {
 	setupDatabaseMysql := flag.Bool("setupmysql", false, "Set table for mysql database !")
 	setupDatabasePostGres := flag.Bool("setuppostgres", false, "Set table for postgres database !")
 	restApiBook := flag.Bool("apibook", false, "Rest API for book")
-	restApiCategory := flag.Bool("apicategory", true, "Rest API for category")
+	restApiCategory := flag.Bool("apicategory", false, "Rest API for category")
 	flag.Parse()
 
 	if *setDataMemory {

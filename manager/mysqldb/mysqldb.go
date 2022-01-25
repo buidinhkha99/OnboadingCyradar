@@ -75,7 +75,7 @@ func (db *Mysql) GetTopBook() string {
 	data := cache.ServeJQueryWithRemoteCache(key)
 	if data == "" {
 		var books []model.Book
-		db.conn.Limit(9).Order("rate desc").Find(&books)
+		db.conn.Limit(8).Order("rate desc").Find(&books)
 		b, _ := json.Marshal(books)
 		err := cache.InsertData(key, string(b))
 		if err != nil {

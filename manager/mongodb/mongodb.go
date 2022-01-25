@@ -134,7 +134,7 @@ func (mg *Mongo) GetTopBook() string {
 		var books []model.Book
 		findOptions := options.Find()
 		findOptions.SetSort(bson.D{{"rate", -1.1}})
-		findOptions.SetLimit(5)
+		findOptions.SetLimit(8)
 		cursor, err := mg.Bookconnection.Find(mg.Ctx, bson.D{}, findOptions)
 		if err = cursor.All(context.TODO(), &books); err != nil {
 			log.Errorf("Error when get group book %v, Error: %v", cursor, err)
