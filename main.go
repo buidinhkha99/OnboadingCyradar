@@ -18,7 +18,7 @@ func main() {
 	// restApi := flag.Bool("restapi", false, "Use API to connect to many databases !")
 	setupDatabaseMysql := flag.Bool("setupmysql", false, "Set table for mysql database !")
 	setupDatabasePostGres := flag.Bool("setuppostgres", false, "Set table for postgres database !")
-	restApiBook := flag.Bool("apibook", false, "Rest API for book")
+	restApiBook := flag.Bool("apibook", true, "Rest API for book")
 	restApiCategory := flag.Bool("apicategory", false, "Rest API for category")
 	flag.Parse()
 

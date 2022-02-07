@@ -86,12 +86,14 @@ func CreateBooks(w http.ResponseWriter, r *http.Request) {
 	var book model.DetailBook
 	err := json.NewDecoder(r.Body).Decode(&book)
 	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, err)
 		return
 	}
 
 	err = db.CreateBook(&book.Book)
 	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, err)
 		return
 	}
@@ -136,6 +138,15 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	for _, groupBook := range detailBook.GroupBooks {
+		if len(groupBook.ID) == 0 {
+			err := db.CreateGoupBook(groupBook)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				fmt.Fprint(w, err)
+				return
+			}
+			continue
+		}
 		err = UpdateBookPubSub(groupBook)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
