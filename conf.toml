@@ -1,12 +1,12 @@
 [mysql]
 status = true
 name = "books_shop"
-host = "127.0.0.1"
-post = "30306"
-password = "My:S3cr3t/"
+host = "mysql-db"
+post = "3306"
+password = "MyS3cr3t"
 
 [redis]
-address = "localhost:6379"
+address = "redis:6379"
 password = ""
 db = 0
 key = "top_books"
@@ -15,7 +15,7 @@ channel_category = "category"
 
 [mongodb]
 status = false
-url = "localhost:27017"
+url = "mongo:27017"
 username = "root"
 password = "root"
 auth_source = "admin"
@@ -26,11 +26,11 @@ connection_group_book ="groupbook"
 
 [postgres]
 status = false
-host ="127.0.0.1"
+host ="postgres"
 name = "postgres"
 post = "5432"
 user = "postgres"
 password = "root"
 
 [http_pubsub]
-status = "true"
+status = "false"

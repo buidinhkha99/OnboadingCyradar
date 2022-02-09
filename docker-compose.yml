@@ -1,0 +1,54 @@
+services:
+
+  gateway:
+    image: caddy
+    ports:
+      - "8080:8080"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+
+    depends_on:
+      - "kha-backend-service"
+      - "kha-frontend-service"
+    restart: "unless-stopped"
+
+  kha-backend-service:
+    image: kha-backend
+    depends_on:
+      - "mysql-db"
+      - "redis"
+      - "postgres"
+      - "mongo"
+    restart: "unless-stopped"
+
+  kha-frontend-service:
+    image: kha-frontend
+    depends_on:
+      - "kha-backend-service"
+    restart: "on-failure"
+  mysql-db:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=MyS3cr3t
+      - MYSQL_DATABASE=books_shop
+      - MYSQL_USER=root
+    restart: "unless-stopped"
+  redis:
+    image: redis
+    restart: "unless-stopped"
+  postgres:
+    image: postgres
+    restart: "unless-stopped"
+    environment:
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: root
+      
+  

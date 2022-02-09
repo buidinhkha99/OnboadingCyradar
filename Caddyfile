@@ -1,0 +1,5 @@
+:80 {
+reverse_proxy /api/* kha-backend:80
+reverse_proxy kha-frontend:80
+}
+

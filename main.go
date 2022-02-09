@@ -2,6 +2,7 @@ package main
 
 import (
 	handlersBook "BookShop/cmd/microservice/book/app/handlers"
+	handlersCat "BookShop/cmd/microservice/category/app/handlers"
 	routerBook "BookShop/cmd/microservice/book/app/router"
 	routerCategory "BookShop/cmd/microservice/category/app/router"
 	"BookShop/migrate"
@@ -41,6 +42,7 @@ func main() {
 
 	if *restApiCategory {
 		// go handlersCat.CheckPubSub()
+		go handlersCat.CheckPubSub()
 		routerCategory.Run()
 	}
 
